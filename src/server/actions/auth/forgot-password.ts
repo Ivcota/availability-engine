@@ -50,7 +50,7 @@ export async function forgotPassword(
     };
   }
 
-  const isCooldown = await checkCooldown(user);
+  const isCooldown = checkCooldown(user);
 
   if (isCooldown) {
     return {
