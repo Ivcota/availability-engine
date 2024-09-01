@@ -1,0 +1,1 @@
+ALTER TABLE "ivcota-stack_user" ADD COLUMN "password_reset_timestamp" timestamp;
