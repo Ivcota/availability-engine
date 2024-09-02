@@ -1,4 +1,3 @@
-import { ReadStream } from "fs";
 import { ScheduleDTO } from "~/server/dto/schedule";
 import { SchedulePort } from "./schedule-port";
 

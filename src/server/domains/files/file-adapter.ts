@@ -6,4 +6,9 @@ export class FileService implements FilePort {
     const file = await fs.promises.readFile(filePath, { encoding: "base64" });
     return file;
   }
+  async readFileAsBase64(file: File): Promise<string> {
+    const buffer = await file.arrayBuffer();
+    const base64String = Buffer.from(buffer).toString("base64");
+    return base64String;
+  }
 }
