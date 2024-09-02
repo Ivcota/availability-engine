@@ -1,6 +1,6 @@
 "use server";
 
-import { User } from "~/server/models/user-model";
+import { UserDrizzleRepo } from "~/server/domains/user/user-repo";
 import { cookies } from "next/headers";
 import { hashPassword } from "~/server/utils/utils";
 import { lucia } from "~/server/auth";
@@ -28,6 +28,8 @@ async function signup(
   _: SignupActionResult,
   formData: FormData,
 ): Promise<SignupActionResult> {
+  const userRepo = new UserDrizzleRepo();
+
   const formDataObject = {
     email: formData.get("email")?.toString(),
     password: formData.get("password")?.toString(),
@@ -47,7 +49,7 @@ async function signup(
 
   const { email, password, firstName, lastName } = result.data;
 
-  const existingUser = await User.findByEmail(email);
+  const existingUser = await userRepo.findUserByEmail(email);
 
   if (existingUser) {
     return {
@@ -59,14 +61,14 @@ async function signup(
 
   const passwordHash = hashPassword(password);
 
-  await User.create({
+  await userRepo.createUser({
     email,
     password: passwordHash,
     firstName: firstName,
     lastName: lastName,
   });
 
-  const user = await User.findByEmail(email);
+  const user = await userRepo.findUserByEmail(email);
 
   if (!user) {
     return {

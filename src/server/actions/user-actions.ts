@@ -1,6 +1,6 @@
 "use server";
 
-import { User } from "../models/user-model";
+import { UserDrizzleRepo } from "../domains/user/user-repo";
 import { revalidatePath } from "next/cache";
 import { validateRequest } from "../auth";
 
@@ -14,6 +14,7 @@ export const getUserFromSession = async (): Promise<{
   };
 }> => {
   const session = await validateRequest();
+  const userRepo = new UserDrizzleRepo();
 
   if (!session.user) {
     return {
@@ -21,7 +22,7 @@ export const getUserFromSession = async (): Promise<{
     };
   }
 
-  const user = await User.findById(session.user.id);
+  const user = await userRepo.findUserById(session.user.id);
 
   if (!user) {
     return { error: "User not found" };
@@ -48,7 +49,7 @@ export const updateUser = async (
   formData: FormData,
 ): Promise<UpdateUserActionState> => {
   const session = await validateRequest();
-
+  const userRepo = new UserDrizzleRepo();
   if (!session.user) {
     return {
       error: {
@@ -69,7 +70,7 @@ export const updateUser = async (
     };
   }
 
-  const user = await User.findByEmail(emailString);
+  const user = await userRepo.findUserByEmail(emailString);
 
   if (user?.email === emailString && user.id !== session.user.id) {
     return {
@@ -80,7 +81,7 @@ export const updateUser = async (
   }
 
   try {
-    await User.update(session.user.id, {
+    await userRepo.updateUser(session.user.id, {
       email: emailString,
       firstName: firstNameString,
       lastName: lastNameString,

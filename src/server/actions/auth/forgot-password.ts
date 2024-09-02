@@ -3,6 +3,8 @@
 import { EmailTemplate } from "~/app/components/emails/email.base";
 import { Resend } from "resend";
 import { User } from "~/server/models/user-model";
+import { UserDTO } from "~/server/dto/user";
+import { UserDrizzleRepo } from "~/server/domains/user/user-repo";
 import { addMinutes } from "date-fns";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -26,6 +28,7 @@ export async function forgotPassword(
   _: ForgotPasswordActionState,
   formData: FormData,
 ): Promise<ForgotPasswordActionState> {
+  const userRepo = new UserDrizzleRepo();
   const emailString = formData.get("email");
 
   const result = ForgotPasswordSchema.safeParse({ email: emailString });
@@ -40,7 +43,7 @@ export async function forgotPassword(
 
   const { email } = result.data;
 
-  const user = await User.findByEmail(email);
+  const user = await userRepo.findUserByEmail(email);
 
   if (!user) {
     return {
@@ -80,14 +83,7 @@ export async function forgotPassword(
 
   redirect("/auth/signin?success=true");
 }
-function checkCooldown(user: {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  email: string;
-  password: string;
-  passwordResetTimestamp: Date | null;
-}) {
+function checkCooldown(user: UserDTO) {
   const { passwordResetTimestamp } = user;
   if (!passwordResetTimestamp) return false;
   const cooldownExpiration = addMinutes(passwordResetTimestamp, 15);
