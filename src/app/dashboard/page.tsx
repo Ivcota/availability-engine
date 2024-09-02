@@ -19,10 +19,15 @@ const DashboardPage = () => {
         Schedule Checker
       </h1>
       <form action={checkScheduleAction} className="flex flex-col gap-4">
-        <Label className="mb-3 text-lg font-semibold text-gray-700">
-          Upload Weekday or Weekend Schedule
-        </Label>
-        <Input type="file" name="images" accept=".png, .jpg, .jpeg" multiple />
+        <div className="flex flex-col gap-3">
+          <Label>Upload Weekday or Weekend Schedule</Label>
+          <Input
+            type="file"
+            name="images"
+            accept=".png, .jpg, .jpeg"
+            multiple
+          />
+        </div>
         <SubmitButton />
       </form>
       {state.error && (
