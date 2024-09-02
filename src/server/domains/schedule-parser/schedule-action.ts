@@ -23,14 +23,14 @@ export const getScheduleDependencyReferences = async (
 
   const image1 = formData.get("image1") as File;
   const image2 = formData.get("image2") as File;
-  const base64Images = [];
+  const base64Images: string[] = [];
 
   try {
     const image1Base64 = await fileService.readFileAsBase64(image1);
     base64Images.push(image1Base64);
   } catch (error) {
     return {
-      error: (error as any).message ?? "An error occurred",
+      error: (error as Error).message || "An error occurred",
     };
   }
 
@@ -43,9 +43,7 @@ export const getScheduleDependencyReferences = async (
 
   try {
     const scheduleDependencyReference =
-      await scheduleService.createScheduleDependencyReference([
-        ...base64Images,
-      ]);
+      await scheduleService.createScheduleDependencyReference(base64Images);
 
     return {
       error: "",
@@ -53,7 +51,7 @@ export const getScheduleDependencyReferences = async (
     };
   } catch (error) {
     return {
-      error: (error as any).message ?? "An error occurred",
+      error: (error as Error).message || "An error occurred",
     };
   }
 };

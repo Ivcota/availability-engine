@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { OpenAIAIAdapter, client } from "~/server/domains/ai/ai-adapter";
 import { describe, expect, it } from "vitest";
 

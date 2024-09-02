@@ -5,7 +5,7 @@ import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod.mjs";
 
 export const client = new OpenAI({
-  apiKey: process.env["OPENAI_API_KEY"],
+  apiKey: process.env.OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
@@ -45,7 +45,12 @@ export class OpenAIAIAdapter implements AIPort {
               type: "text",
               text: "Please analyze the provided image file content and extract the schedule information.",
             },
-            ...(content as any),
+            ...(content as {
+              type: "image_url";
+              image_url: {
+                url: string;
+              };
+            }[]),
           ],
         },
       ],
