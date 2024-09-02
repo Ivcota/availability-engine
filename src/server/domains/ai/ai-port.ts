@@ -6,5 +6,7 @@ export interface ChatMessage {
 }
 
 export interface AIPort {
-  createSchedule(text: string): Promise<ScheduleDTO[] | null | undefined>;
+  createSchedule(
+    fileContent: string[],
+  ): Promise<ScheduleDTO[] | null | undefined>;
 }

@@ -5,7 +5,9 @@ export const ScheduleDTOSchema = z.object({
   people: z.array(z.string()),
 });
 
-export const ScheduleDTOsSchema = z.array(ScheduleDTOSchema);
+export const ScheduleResponseSchema = z.object({
+  schedule: z.array(ScheduleDTOSchema),
+});
 
 export interface ScheduleDTO {
   date: string;
