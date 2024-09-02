@@ -65,6 +65,46 @@ describe("schedule-parser integration", () => {
     );
   });
 
+  it("should allow for multiple images", async () => {
+    const fileService = new FileService();
+    const aiAdapter = new OpenAIAIAdapter(client);
+    const scheduleAdapter = new AIScheduleAdapter(aiAdapter);
+    const scheduleService = new ScheduleService(scheduleAdapter);
+
+    const file1Path = path.join(__dirname, "./example-split-1.png");
+    const file2Path = path.join(__dirname, "./example-split-2.png");
+
+    const image1 = await fileService.createBase64(file1Path);
+    const image2 = await fileService.createBase64(file2Path);
+
+    const scheduleDependencyReference =
+      await scheduleService.createScheduleDependencyReference([image1, image2]);
+
+    expect(scheduleDependencyReference).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          date: "2024-09-01",
+          people: expect.arrayContaining([
+            "Ray Patton",
+            "Robert Byrne",
+            "Colvin Diles",
+            "Rick Green",
+            "Jacob Diaz",
+          ]),
+        }),
+        expect.objectContaining({
+          date: "2024-09-15",
+          people: expect.arrayContaining([
+            "Jay James",
+            "Theodore Forman",
+            "Ron Plasse",
+            "Iverson Diles",
+          ]),
+        }),
+      ]),
+    );
+  });
+
   it("should throw an error if more than 3 images are provided", async () => {
     const fileService = new FileService();
     const aiAdapter = new OpenAIAIAdapter(client);

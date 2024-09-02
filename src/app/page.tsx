@@ -10,11 +10,11 @@ export default async function HomePage() {
       <div className="container mx-auto mb-32 px-4 py-16">
         <div className="mx-auto max-w-2xl text-center">
           <div className="flex flex-col items-center gap-4">
-            <h1 className="bg-gradient-to-br from-gray-600 to-black bg-clip-text text-4xl font-bold tracking-tight text-transparent sm:text-6xl">
-              The oppinionated starter for fast and modern web development
+            <h1 className="bg-gradient-to-br from-gray-600 to-black bg-clip-text py-1 text-4xl font-bold tracking-tight text-transparent sm:text-6xl">
+              Availability Engine
             </h1>
             <p className="bg-gradient-to-br from-gray-600 to-gray-700 bg-clip-text text-xl font-light text-transparent sm:text-2xl">
-              From idea to product so you can focus on features
+              AI-powered schedule "double checking" tool
             </p>
           </div>
 

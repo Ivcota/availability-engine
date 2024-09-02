@@ -21,24 +21,19 @@ export const getScheduleDependencyReferences = async (
     new AIScheduleAdapter(new OpenAIAIAdapter(client)),
   );
 
-  const image1 = formData.get("image1") as File;
-  const image2 = formData.get("image2") as File;
+  const images = formData.getAll("images") as File[];
+
   const base64Images: string[] = [];
 
-  try {
-    const image1Base64 = await fileService.readFileAsBase64(image1);
-    base64Images.push(image1Base64);
-  } catch (error) {
-    return {
-      error: (error as Error).message || "An error occurred",
-    };
-  }
-
-  try {
-    const image2Base64 = await fileService.readFileAsBase64(image2);
-    base64Images.push(image2Base64);
-  } catch (error) {
-    console.error(error);
+  for (const image of images) {
+    try {
+      const imageBase64 = await fileService.readFileAsBase64(image);
+      base64Images.push(imageBase64);
+    } catch (error) {
+      return {
+        error: (error as Error).message || "An error occurred",
+      };
+    }
   }
 
   try {

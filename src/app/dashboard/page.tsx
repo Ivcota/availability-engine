@@ -1,13 +1,14 @@
 "use client";
 
+import { useFormState, useFormStatus } from "react-dom";
+
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { getScheduleDependencyReferences } from "~/server/domains/schedule-parser/schedule-action";
-import { useFormState } from "react-dom";
 
 const DashboardPage = () => {
-  const [state, checkScheduleAction, isPending] = useFormState(
+  const [state, checkScheduleAction] = useFormState(
     getScheduleDependencyReferences,
     {},
   );
@@ -17,23 +18,12 @@ const DashboardPage = () => {
       <h1 className="mb-6 text-center text-3xl font-extrabold text-gray-900">
         Schedule Checker
       </h1>
-      <form action={checkScheduleAction} className="flex flex-col">
+      <form action={checkScheduleAction} className="flex flex-col gap-4">
         <Label className="mb-3 text-lg font-semibold text-gray-700">
           Upload Weekday or Weekend Schedule
         </Label>
-        <Input
-          type="file"
-          name="image1"
-          accept=".png, .jpg, .jpeg"
-          className="mb-5 rounded-md border border-gray-300 p-3 transition duration-200 focus:border-blue-500 focus:outline-none focus:ring focus:ring-blue-200"
-        />
-        <Button
-          type="submit"
-          disabled={isPending}
-          className={`rounded-md bg-blue-600 px-4 py-2 font-semibold text-white transition duration-200 hover:bg-blue-700 ${isPending ? "cursor-not-allowed opacity-50" : ""}`}
-        >
-          {isPending ? "Checking..." : "Check Schedule"}
-        </Button>
+        <Input type="file" name="images" accept=".png, .jpg, .jpeg" multiple />
+        <SubmitButton />
       </form>
       {state.error && (
         <p className="text-center font-semibold text-red-600">{state.error}</p>
@@ -57,6 +47,15 @@ const DashboardPage = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const SubmitButton = () => {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? "Checking..." : "Check Schedule"}
+    </Button>
   );
 };
 
