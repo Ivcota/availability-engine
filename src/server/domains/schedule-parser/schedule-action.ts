@@ -7,7 +7,7 @@ import { FileService } from "../files/file-adapter";
 import { ScheduleDTO } from "~/server/dto/schedule";
 import { ScheduleService } from "./schedule-service";
 
-interface ScheduleActionState {
+export interface ScheduleActionState {
   error?: string;
   scheduleDependencyReference?: ScheduleDTO[];
 }
