@@ -20,7 +20,8 @@
     "start": "next start",
     "postinstall": "node post-install.cjs",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "vitest"
   },
   "dependencies": {
     "@libsql/client": "^0.6.0",
@@ -39,6 +40,7 @@
     "lucia": "^3.2.0",
     "lucide-react": "^0.408.0",
     "next": "^14.2.4",
+    "openai": "^4.57.0",
     "pg": "^8.12.0",
     "postgres": "^3.4.4",
     "quirrel": "^1.8.1",
@@ -81,7 +83,8 @@
     "prettier-plugin-tailwindcss": "^0.6.5",
     "storybook": "^8.2.2",
     "tailwindcss": "^3.4.3",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^2.0.5"
   },
   "ct3aMetadata": {
     "initVersion": "7.36.1"
