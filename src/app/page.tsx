@@ -14,7 +14,7 @@ export default async function HomePage() {
               Availability Engine
             </h1>
             <p className="bg-gradient-to-br from-gray-600 to-gray-700 bg-clip-text text-xl font-light text-transparent sm:text-2xl">
-              AI-powered schedule "double checking" tool
+              AI-powered schedule &quot;double checking&quot; tool
             </p>
           </div>
 
