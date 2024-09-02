@@ -62,4 +62,27 @@ describe("schedule-parser integration", () => {
       ]),
     );
   });
+
+  it("should throw an error if more than 3 images are provided", async () => {
+    const fileService = new FileService();
+    const aiAdapter = new OpenAIAIAdapter(client);
+    const scheduleAdapter = new AIScheduleAdapter(aiAdapter);
+    const scheduleService = new ScheduleService(scheduleAdapter);
+
+    const file1Path = path.join(__dirname, "./example-schedule-image.png");
+    const file2Path = path.join(__dirname, "./example-schedule-image.png");
+    const file3Path = path.join(__dirname, "./example-schedule-image.png");
+    const file4Path = path.join(__dirname, "./example-schedule-image.png");
+
+    const images = [
+      await fileService.createBase64(file1Path),
+      await fileService.createBase64(file2Path),
+      await fileService.createBase64(file3Path),
+      await fileService.createBase64(file4Path),
+    ];
+
+    await expect(
+      scheduleService.createScheduleDependencyReference(images),
+    ).rejects.toThrow("Only 3 schedules are allowed");
+  });
 });
