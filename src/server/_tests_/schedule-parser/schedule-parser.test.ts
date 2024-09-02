@@ -12,7 +12,7 @@ import { FileService } from "~/server/domains/files/file-adapter";
 import { ScheduleService } from "~/server/domains/schedule-parser/schedule-service";
 import path from "path";
 
-describe("schedule-parser integration", () => {
+describe("Schedule Parser Service", () => {
   it("should create a schedule dependency reference based on image", async () => {
     const fileService = new FileService();
     const aiAdapter = new OpenAIAIAdapter(client);
