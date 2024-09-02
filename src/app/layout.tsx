@@ -6,8 +6,8 @@ import Providers from "./providers";
 import { Toaster } from "~/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "Ivcota Stack",
-  description: "Build products faster",
+  title: "Availability Engine",
+  description: "Build schedules more efficiently",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
