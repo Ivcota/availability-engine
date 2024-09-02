@@ -15,11 +15,11 @@ export class UserInMemoryRepo implements UserPort {
   }
 
   async findUserByEmail(email: string): Promise<UserDTO | null> {
-    return this.users.find((user) => user.email === email) || null;
+    return this.users.find((user) => user.email === email) ?? null;
   }
 
   async findUserById(id: string): Promise<UserDTO | null> {
-    return this.users.find((user) => user.id === id) || null;
+    return this.users.find((user) => user.id === id) ?? null;
   }
 
   async updateUser(id: string, data: Partial<UserDTO>): Promise<void> {

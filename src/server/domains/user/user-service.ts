@@ -5,7 +5,7 @@ import { UserPort } from "./user-port";
 
 interface UserServicePort {
   createUser(data: CreateUserDTO): Promise<UserDTO>;
-  updateUser(id: string, data: Partial<UserDTO>): Promise<UserDTO>;
+  updateUser(id: string, data: UpdateUserDTO): Promise<UserDTO>;
   deleteUser(id: string): Promise<undefined | null>;
   findUserByEmail(email: string): Promise<UserDTO | null>;
   findUserById(id: string): Promise<UserDTO | null>;
@@ -22,14 +22,16 @@ export class UserService implements UserServicePort {
     const hashedPassword = this.userHelper.generateHash(data.password);
     await this.userRepo.createUser({ ...data, password: hashedPassword });
     const user = await this.userRepo.findUserByEmail(data.email);
+
     if (!user) {
+      console.log(user);
       throw new Error("User not found");
     }
 
     return user;
   }
 
-  async updateUser(id: string, data: Partial<UpdateUserDTO>): Promise<UserDTO> {
+  async updateUser(id: string, data: UpdateUserDTO): Promise<UserDTO> {
     const user = await this.userRepo.findUserById(id);
     let hashedPassword: string | undefined;
 
@@ -74,10 +76,6 @@ export class UserService implements UserServicePort {
 
   async findUserByEmail(email: string): Promise<UserDTO | null> {
     const user = await this.userRepo.findUserByEmail(email);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
     return user;
   }
 

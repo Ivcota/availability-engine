@@ -1,10 +1,10 @@
 "use server";
 
-import { UserDrizzleRepo } from "~/server/domains/user/user-repo";
 import { cookies } from "next/headers";
 import { hashPassword } from "~/server/utils/utils";
 import { lucia } from "~/server/auth";
 import { redirect } from "next/navigation";
+import { userService } from "~/server/domains/user/user-packaged-service";
 import { z } from "zod";
 
 const SignInSchema = z.object({
@@ -24,7 +24,6 @@ export async function signIn(
   _: SignInActionState,
   formData: FormData,
 ): Promise<SignInActionState> {
-  const userRepo = new UserDrizzleRepo();
   const emailString = formData.get("email")?.toString();
   const passwordString = formData.get("password")?.toString();
 
@@ -44,7 +43,7 @@ export async function signIn(
 
   const { email, password } = result;
 
-  const user = await userRepo.findUserByEmail(email);
+  const user = await userService.findUserByEmail(email);
 
   if (!user) {
     return {

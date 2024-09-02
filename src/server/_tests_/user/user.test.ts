@@ -92,12 +92,6 @@ describe("User Service", () => {
     );
   });
 
-  it("should throw an error if user not found by email", async () => {
-    await expect(
-      userService.findUserByEmail("non-existent-email@test.com"),
-    ).rejects.toThrow("User not found");
-  });
-
   it("should allow for password change", async () => {
     const user = await userService.createUser({
       email: "test@test.com",

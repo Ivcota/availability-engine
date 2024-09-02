@@ -1,10 +1,10 @@
 "use server";
 
-import { UserDrizzleRepo } from "~/server/domains/user/user-repo";
+import { UserDTO } from "~/server/dto/user";
 import { cookies } from "next/headers";
-import { hashPassword } from "~/server/utils/utils";
 import { lucia } from "~/server/auth";
 import { redirect } from "next/navigation";
+import { userService } from "~/server/domains/user/user-packaged-service";
 import { z } from "zod";
 
 const SignupSchema = z.object({
@@ -28,8 +28,6 @@ async function signup(
   _: SignupActionResult,
   formData: FormData,
 ): Promise<SignupActionResult> {
-  const userRepo = new UserDrizzleRepo();
-
   const formDataObject = {
     email: formData.get("email")?.toString(),
     password: formData.get("password")?.toString(),
@@ -49,7 +47,7 @@ async function signup(
 
   const { email, password, firstName, lastName } = result.data;
 
-  const existingUser = await userRepo.findUserByEmail(email);
+  const existingUser = await userService.findUserByEmail(email);
 
   if (existingUser) {
     return {
@@ -59,21 +57,19 @@ async function signup(
     };
   }
 
-  const passwordHash = hashPassword(password);
+  let user: UserDTO | null = null;
 
-  await userRepo.createUser({
-    email,
-    password: passwordHash,
-    firstName: firstName,
-    lastName: lastName,
-  });
-
-  const user = await userRepo.findUserByEmail(email);
-
-  if (!user) {
+  try {
+    user = await userService.createUser({
+      email,
+      password,
+      firstName: firstName,
+      lastName: lastName,
+    });
+  } catch (error) {
     return {
       error: {
-        general: "User creation failed",
+        general: (error as Error).message,
       },
     };
   }
