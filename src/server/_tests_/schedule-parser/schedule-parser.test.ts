@@ -1,9 +1,13 @@
 /* eslint-disable */
 
+import {
+  AIScheduleAdapter,
+  ScheduleHelperAdapter,
+  TestScheduleAdapter,
+} from "~/server/domains/schedule-parser/schedule-adapter";
 import { OpenAIAIAdapter, client } from "~/server/domains/ai/ai-adapter";
 import { describe, expect, it } from "vitest";
 
-import { AIScheduleAdapter } from "~/server/domains/schedule-parser/schedule-adapter";
 import { FileService } from "~/server/domains/files/file-adapter";
 import { ScheduleService } from "~/server/domains/schedule-parser/schedule-service";
 import path from "path";
@@ -13,7 +17,11 @@ describe("schedule-parser integration", () => {
     const fileService = new FileService();
     const aiAdapter = new OpenAIAIAdapter(client);
     const scheduleAdapter = new AIScheduleAdapter(aiAdapter);
-    const scheduleService = new ScheduleService(scheduleAdapter);
+    const scheduleHelper = new ScheduleHelperAdapter();
+    const scheduleService = new ScheduleService(
+      scheduleAdapter,
+      scheduleHelper,
+    );
 
     const file1Path = path.join(__dirname, "./example-schedule-image.png");
 
@@ -69,7 +77,11 @@ describe("schedule-parser integration", () => {
     const fileService = new FileService();
     const aiAdapter = new OpenAIAIAdapter(client);
     const scheduleAdapter = new AIScheduleAdapter(aiAdapter);
-    const scheduleService = new ScheduleService(scheduleAdapter);
+    const scheduleHelper = new ScheduleHelperAdapter();
+    const scheduleService = new ScheduleService(
+      scheduleAdapter,
+      scheduleHelper,
+    );
 
     const file1Path = path.join(__dirname, "./example-split-1.png");
     const file2Path = path.join(__dirname, "./example-split-2.png");
@@ -105,11 +117,38 @@ describe("schedule-parser integration", () => {
     );
   });
 
+  it("should sort the schedule in order from earliest to latest", async () => {
+    const scheduleAdapter = new TestScheduleAdapter();
+    const scheduleHelper = new ScheduleHelperAdapter();
+    const scheduleService = new ScheduleService(
+      scheduleAdapter,
+      scheduleHelper,
+    );
+
+    const scheduleDependencyReference =
+      await scheduleService.createScheduleDependencyReference(["mockfiles"]);
+
+    const sortedSchedule = scheduleHelper.sortSchedule(
+      scheduleDependencyReference,
+    );
+
+    expect(sortedSchedule).toEqual([
+      { date: "2024-01-23", people: ["John Doe", "Jane Doe"] },
+      { date: "2024-01-24", people: ["Alice Smith", "Bob Johnson"] },
+      { date: "2024-01-25", people: ["Charlie Brown", "Diana Prince"] },
+      { date: "2024-01-26", people: ["Eve Adams", "Frank Castle"] },
+    ]);
+  });
+
   it("should throw an error if more than 3 images are provided", async () => {
     const fileService = new FileService();
     const aiAdapter = new OpenAIAIAdapter(client);
     const scheduleAdapter = new AIScheduleAdapter(aiAdapter);
-    const scheduleService = new ScheduleService(scheduleAdapter);
+    const scheduleHelper = new ScheduleHelperAdapter();
+    const scheduleService = new ScheduleService(
+      scheduleAdapter,
+      scheduleHelper,
+    );
 
     const file1Path = path.join(__dirname, "./example-schedule-image.png");
     const file2Path = path.join(__dirname, "./example-schedule-image.png");

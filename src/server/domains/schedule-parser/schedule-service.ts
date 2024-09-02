@@ -1,11 +1,17 @@
+import { ScheduleHelperPort, SchedulePort } from "./schedule-port";
+
 import { ScheduleDTO } from "~/server/dto/schedule";
-import { SchedulePort } from "./schedule-port";
 
 export class ScheduleService {
   private readonly scheduleAdapter: SchedulePort;
+  private readonly scheduleHelper: ScheduleHelperPort;
 
-  constructor(scheduleAdapter: SchedulePort) {
+  constructor(
+    scheduleAdapter: SchedulePort,
+    scheduleHelper: ScheduleHelperPort,
+  ) {
     this.scheduleAdapter = scheduleAdapter;
+    this.scheduleHelper = scheduleHelper;
   }
 
   async createScheduleDependencyReference(
@@ -15,6 +21,7 @@ export class ScheduleService {
       throw new Error("Only 3 schedules are allowed");
     }
     const response = await this.scheduleAdapter.generateSchedule(schedules);
-    return response ?? [];
+    const sortedSchedule = this.scheduleHelper.sortSchedule(response);
+    return sortedSchedule ?? [];
   }
 }

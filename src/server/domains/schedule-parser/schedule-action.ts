@@ -1,8 +1,8 @@
 "use server";
 
+import { AIScheduleAdapter, ScheduleHelperAdapter } from "./schedule-adapter";
 import { OpenAIAIAdapter, client } from "../ai/ai-adapter";
 
-import { AIScheduleAdapter } from "./schedule-adapter";
 import { FileService } from "../files/file-adapter";
 import { ScheduleDTO } from "~/server/dto/schedule";
 import { ScheduleService } from "./schedule-service";
@@ -19,6 +19,7 @@ export const getScheduleDependencyReferences = async (
   const fileService = new FileService();
   const scheduleService = new ScheduleService(
     new AIScheduleAdapter(new OpenAIAIAdapter(client)),
+    new ScheduleHelperAdapter(),
   );
 
   const images = formData.getAll("images") as File[];
