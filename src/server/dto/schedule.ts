@@ -7,6 +7,7 @@ export const ScheduleDTOSchema = z.object({
 
 export const ScheduleResponseSchema = z.object({
   schedule: z.array(ScheduleDTOSchema),
+  what_i_saw: z.string(),
 });
 
 export interface ScheduleDTO {

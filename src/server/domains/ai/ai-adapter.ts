@@ -1,8 +1,7 @@
-import OpenAI, { toFile } from "openai";
 import { ScheduleDTO, ScheduleResponseSchema } from "~/server/dto/schedule";
 
 import { AIPort } from "./ai-port";
-import { Blob } from "fetch-blob";
+import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod.mjs";
 
 export const client = new OpenAI({
@@ -20,39 +19,34 @@ export class OpenAIAIAdapter implements AIPort {
   async createSchedule(
     fileContent: string[],
   ): Promise<ScheduleDTO[] | null | undefined> {
-    const file = await this.client.files.create({
-      file: new File(fileContent, "schedule.txt", { type: "text/plain" }),
-      purpose: "fine-tune",
-    });
+    const content = [];
 
-    await this.client.uploads.create({
-      purpose: "fine-tune",
-      filename: "schedule.txt",
-      bytes: file.bytes,
-      mime_type: "text/plain",
-    });
+    for (const file of fileContent) {
+      content.push({
+        type: "image_url",
+        image_url: {
+          url: `data:image/jpeg;base64,${file}`,
+        },
+      });
+    }
 
     const completion = await this.client.beta.chat.completions.parse({
-      model: "gpt-4o-2024-08-06",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
           content:
-            "I am a schedule parser, I will be given a file content, and I will parse it into a list of dates and names.",
+            "I am a schedule parser, I will be given image file content, and I will parse it into a list of dates and names. For example, the output could look like this: { date: '2024-01-23', people: ['John Doe', 'Jane Doe'] }, { date: '2024-01-24', people: ['John Doe', 'Jane Doe'] }.",
         },
         {
           role: "user",
-          content: `
-          Please analyze the provided file content and extract the schedule information. 
-          Format the output as follows:
-
-          export const ScheduleDTOSchema = z.object({
-            date: z.string(),
-            people: z.array(z.string()),
-          });
-
-          // Ensure that the extracted data adheres to the structure defined above.
-          `,
+          content: [
+            {
+              type: "text",
+              text: "Please analyze the provided image file content and extract the schedule information.",
+            },
+            ...(content as any),
+          ],
         },
       ],
       response_format: zodResponseFormat(ScheduleResponseSchema, "schedule"),
