@@ -1,15 +1,16 @@
 import { CreateUserDTO, UpdateUserDTO, UserDTO } from "~/server/dto/user";
 
+import { User } from "./user";
 import { UserHelperPort } from "./user-helper-port";
 import { UserPort } from "./user-port";
 
 interface UserServicePort {
-  createUser(data: CreateUserDTO): Promise<UserDTO>;
-  updateUser(id: string, data: UpdateUserDTO): Promise<UserDTO>;
+  createUser(data: CreateUserDTO): Promise<User>;
+  updateUser(id: string, data: UpdateUserDTO): Promise<User>;
   deleteUser(id: string): Promise<undefined | null>;
-  findUserByEmail(email: string): Promise<UserDTO | null>;
-  findUserById(id: string): Promise<UserDTO | null>;
-  generateRandomPassword(id: string): Promise<UserDTO>;
+  findUserByEmail(email: string): Promise<User | null>;
+  findUserById(id: string): Promise<User | null>;
+  generateRandomPassword(id: string): Promise<User>;
 }
 
 export class UserService implements UserServicePort {
@@ -18,7 +19,7 @@ export class UserService implements UserServicePort {
     private readonly userHelper: UserHelperPort,
   ) {}
 
-  async createUser(data: CreateUserDTO): Promise<UserDTO> {
+  async createUser(data: CreateUserDTO): Promise<User> {
     const hashedPassword = this.userHelper.generateHash(data.password);
     await this.userRepo.createUser({ ...data, password: hashedPassword });
     const user = await this.userRepo.findUserByEmail(data.email);
@@ -31,7 +32,7 @@ export class UserService implements UserServicePort {
     return user;
   }
 
-  async updateUser(id: string, data: UpdateUserDTO): Promise<UserDTO> {
+  async updateUser(id: string, data: UpdateUserDTO): Promise<User> {
     const user = await this.userRepo.findUserById(id);
     let hashedPassword: string | undefined;
 
@@ -65,7 +66,7 @@ export class UserService implements UserServicePort {
     return user;
   }
 
-  async findUserById(id: string): Promise<UserDTO | null> {
+  async findUserById(id: string): Promise<User | null> {
     const user = await this.userRepo.findUserById(id);
 
     if (!user) {
@@ -74,17 +75,22 @@ export class UserService implements UserServicePort {
     return user;
   }
 
-  async findUserByEmail(email: string): Promise<UserDTO | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     const user = await this.userRepo.findUserByEmail(email);
+
     return user;
   }
 
-  async generateRandomPassword(id: string): Promise<UserDTO> {
+  async generateRandomPassword(id: string): Promise<User> {
     const user = await this.userRepo.findUserById(id);
+
     if (!user) {
       throw new Error("User not found");
     }
-    const updatedUser = this.userHelper.generatePasswordForEmail(user.email);
-    return updatedUser;
+    const updatedUser = await this.userHelper.generatePasswordForEmail(
+      user.email,
+    );
+
+    return User.fromDTO({ ...updatedUser });
   }
 }

@@ -1,5 +1,6 @@
 import { CreateUserDTO, UserDTO } from "~/server/dto/user";
 
+import { User } from "./user";
 import { UserPort } from "./user-port";
 
 export class UserInMemoryRepo implements UserPort {
@@ -14,12 +15,18 @@ export class UserInMemoryRepo implements UserPort {
     this.users.push(newUser);
   }
 
-  async findUserByEmail(email: string): Promise<UserDTO | null> {
-    return this.users.find((user) => user.email === email) ?? null;
+  async findUserByEmail(email: string): Promise<User | null> {
+    const user = this.users.find((user) => user.email === email) ?? null;
+    if (!user) return null;
+    return User.fromDTO({ ...user });
   }
 
-  async findUserById(id: string): Promise<UserDTO | null> {
-    return this.users.find((user) => user.id === id) ?? null;
+  async findUserById(id: string): Promise<User | null> {
+    const user = this.users.find((user) => user.id === id) ?? null;
+
+    if (!user) return null;
+
+    return User.fromDTO({ ...user });
   }
 
   async updateUser(id: string, data: Partial<UserDTO>): Promise<void> {

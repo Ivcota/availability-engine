@@ -1,6 +1,7 @@
 import { CreateUserDTO, UserDTO } from "~/server/dto/user";
 import { DB, db as dbInstance } from "~/server/db";
 
+import { User } from "./user";
 import { UserPort } from "./user-port";
 import { eq } from "drizzle-orm";
 import { userTable } from "~/server/db/schema";
@@ -17,38 +18,38 @@ export class UserDrizzleRepo implements UserPort {
     });
   }
 
-  async findUserByEmail(email: string): Promise<UserDTO | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     const user = await this.db.query.userTable.findFirst({
       where: eq(userTable.email, email),
     });
 
     if (!user) return null;
 
-    return {
+    return User.fromDTO({
       id: user.id,
       email: user.email,
       password: user.password,
       firstName: user?.firstName ?? undefined,
       lastName: user?.lastName ?? undefined,
       passwordResetTimestamp: user?.passwordResetTimestamp,
-    };
+    });
   }
 
-  async findUserById(id: string): Promise<UserDTO | null> {
+  async findUserById(id: string): Promise<User | null> {
     const user = await this.db.query.userTable.findFirst({
       where: eq(userTable.id, id),
     });
 
     if (!user) return null;
 
-    return {
+    return User.fromDTO({
       id: user.id,
       email: user.email,
       password: user.password,
       firstName: user?.firstName ?? undefined,
       lastName: user?.lastName ?? undefined,
       passwordResetTimestamp: user?.passwordResetTimestamp,
-    };
+    });
   }
 
   async updateUser(id: string, data: Partial<UserDTO>) {
